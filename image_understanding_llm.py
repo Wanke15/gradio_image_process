@@ -47,12 +47,35 @@ def process_image(image):
    res = llm_image_tag(base64_str)
    return res
 
+
+def create_image(text):
+   response = client.images.generations(
+      model="cogview-3-flash",  # 填写需要调用的模型编码
+      prompt=text,
+   )
+
+   url = response.data[0].url
+   return url
+
 # Gradio Interface
-iface = gr.Interface(
-   title="Build an Image Understanding Engine",
-   description="by Jeff",
-   fn=process_image,
-   inputs=gr.Image(label="Input Image"),
-   outputs=gr.Json(label="Result"),
-)
+with gr.Blocks() as iface:
+   with gr.TabItem("Image2Text"):
+      gr.Interface(
+         title="Build an Image Understanding Engine",
+         description="by Jeff",
+         fn=process_image,
+         inputs=gr.Image(label="Input Image"),
+         # outputs=gr.Gallery(label="Result Images"),
+         outputs=gr.Json(label="Result"),
+      )
+
+   with gr.TabItem("Text2Image"):
+      gr.Interface(
+         title="Build an Image creation Engine",
+         description="by Jeff",
+         fn=create_image,
+         inputs=gr.Text(label="Input Text"),
+         outputs=gr.Image(label="Result"),
+      )
+
 iface.launch()
